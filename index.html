@@ -1,329 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leading University Cover Page Generator</title>
-    <style>
-        body {
-            font-family: 'Times New Roman', Times, serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 30px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leading University Cover Page Generator</title>
+<style>
+  :root {
+    --ink: #14213d;
+    --accent: #0b5d3b;
+    --panel-bg: #eef1f5;
+    --muted: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--panel-bg);
+    color: var(--ink);
+  }
 
-        /* Control Panel Form Style */
-        .form-container {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 350px;
-        }
+  /* ---------- App layout ---------- */
+  .app {
+    display: grid;
+    grid-template-columns: 380px minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px;
+    min-height: 100vh;
+    align-items: start;
+  }
+  .panel {
+    background: #fff;
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 2px 12px rgba(20, 33, 61, 0.1);
+    position: sticky;
+    top: 24px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+  .panel h1 { font-size: 20px; margin: 0 0 4px; }
+  .panel p.sub { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+  .panel fieldset {
+    border: 1px solid #d6dbe4;
+    border-radius: 8px;
+    margin: 0 0 16px;
+    padding: 12px 14px 6px;
+  }
+  .panel legend { font-weight: 700; font-size: 14px; padding: 0 6px; color: var(--accent); }
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 3px; }
+  .field input {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #c4cad6;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  .field input::placeholder { color: #9aa3b2; }
+  .field input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+  .btn-row { display: flex; gap: 10px; }
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border: 0;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-print { background: var(--accent); color: #fff; }
+  .btn-clear { background: #e5e7eb; color: var(--ink); flex: 0 0 90px; }
+  .btn:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
 
-        .form-container h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #333;
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 5px;
-        }
+  /* ---------- Preview area (centered + scaled by JS) ---------- */
+  .preview-area {
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+  .scale-box {
+    width: 210mm;
+    transform-origin: top left;
+  }
 
-        .form-group {
-            margin-bottom: 12px;
-        }
+  /* ---------- A4 page ---------- */
+  .page {
+    width: 210mm;
+    height: 297mm;
+    padding: 20mm 14mm 14mm;
+    background: #fff;
+    color: #000;
+    font-family: "Times New Roman", Times, serif;
+    border: 1px solid #000;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #555;
-        }
+  /* Header */
+  .header { text-align: center; margin-top: 4mm; }
+  .header img {
+    display: block;
+    margin: 0 auto 1mm;
+    width: 52mm;
+    height: auto;
+    max-height: 52mm;
+    object-fit: contain;
+  }
+  .uni {
+    font-size: 24pt;
+    font-weight: 400;
+    font-variant: small-caps;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .dept-label { font-size: 20pt; font-weight: 700; margin: 1mm 0 0; }
+  .dept-name { font-size: 22pt; font-weight: 700; margin: 3mm 0 0; }
 
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 13px;
-        }
+  /* Course info */
+  .course {
+    text-align: center;
+    font-weight: 700;
+    font-size: 17pt;
+    line-height: 1.35;
+    margin-top: 5mm;
+  }
+  .course div {
+    margin-bottom: 2.5mm;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+  }
 
-        .print-btn {
-            background-color: #0056b3;
-            color: white;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 4px;
-            font-size: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+  /* ---------- Split table: strict 50 / 50 ---------- */
+  .table-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 8mm;
+    min-height: 0;
+  }
+  table.split {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: 1px solid #000;
+  }
+  table.split col { width: 50%; }
+  table.split th, table.split td {
+    width: 50%;
+    border: 1px solid #000;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  table.split th {
+    text-align: left;
+    font-size: 18pt;
+    font-weight: 700;
+    padding: 3mm 3.5mm 7mm;
+  }
+  table.split td {
+    vertical-align: top;
+    padding: 5mm 3.5mm;
+    height: 62mm;
+    font-size: 15pt;
+  }
+  /* label column width per side (so all colons line up) */
+  td.stu { --lw: 28mm; }
+  td.tea { --lw: 31mm; }
 
-        .print-btn:hover {
-            background-color: #004085;
-        }
+  /* Each line:  Label  |  :  |  Value
+     Value wraps inside its own column, so a long name stays
+     aligned under the first letter of the name, not under the label. */
+  .info {
+    display: grid;
+    grid-template-columns: var(--lw) 3mm minmax(0, 1fr);
+    column-gap: 1mm;
+    align-items: start;
+    margin-bottom: 2.5mm;
+    line-height: 1.25;
+  }
+  .info .lbl { font-weight: 700; white-space: nowrap; }
+  .info .col { font-weight: 700; text-align: center; }
+  .info .val {
+    min-width: 0;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .info .val.small { font-size: 12.5pt; line-height: 1.4; }
 
-        /* Cover Page Preview Style (A4 Size Fixed) */
-        .cover-page {
-            background: white;
-            width: 210mm;
-            height: 297mm; /* Fixed height jate page cross na kore */
-            padding: 20mm 20mm;
-            box-sizing: border-box;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            overflow: hidden; /* Extra content hide rakhbe */
-        }
+  /* Footer */
+  .footer {
+    text-align: center;
+    font-weight: 700;
+    font-size: 16pt;
+    margin-bottom: 8mm;
+  }
 
-        .header-section {
-            text-align: center;
-        }
+  .ph { color: #b3b8c2; font-style: italic; font-weight: 400; }
 
-        .logo-area img {
-            width: 65px; /* Logo-er size nirdisto kore dewa holo jate boro na hoy */
-            height: auto;
-            margin-bottom: 3px;
-        }
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .app { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+    .panel { position: static; max-height: none; }
+  }
 
-        .university-name {
-            font-size: 21px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-            margin: 4px 0;
-            color: #111;
-        }
-
-        .dept-title {
-            font-size: 15px;
-            font-weight: bold;
-            margin: 2px 0;
-        }
-
-        .dept-name {
-            font-size: 17px;
-            font-weight: bold;
-            margin: 4px 0 10px 0;
-        }
-
-        .course-info {
-            font-size: 14px;
-            font-weight: bold;
-            margin: 5px 0;
-            line-height: 1.3;
-        }
-
-        /* Table Section */
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .info-table th, .info-table td {
-            border: 1px solid #000;
-            padding: 10px 12px;
-            vertical-align: top;
-            font-size: 13.5px;
-            line-height: 1.4;
-        }
-
-        .info-table th {
-            text-align: center;
-            font-weight: bold;
-            background-color: #fafafa;
-        }
-
-        .footer-date {
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        /* Print Media Settings */
-        @media print {
-            body {
-                background: none;
-                padding: 0;
-            }
-            .form-container {
-                display: none;
-            }
-            .cover-page {
-                box-shadow: none;
-                margin: 0;
-                width: 100%;
-                height: 100vh;
-                page-break-after: always;
-            }
-        }
-    </style>
+  /* ---------- Print: exactly ONE A4 page ---------- */
+  @page { size: A4; margin: 0; }
+  @media print {
+    html, body {
+      background: #fff !important;
+      width: 210mm;
+      height: 297mm;
+      overflow: hidden;
+    }
+    .panel { display: none !important; }
+    .app {
+      display: block;
+      padding: 0;
+      margin: 0;
+      min-height: 0;
+      height: 297mm;
+      overflow: hidden;
+    }
+    .preview-area { overflow: hidden; height: 297mm !important; width: 210mm; }
+    .scale-box {
+      transform: none !important;
+      margin: 0 !important;
+      width: 210mm;
+    }
+    .page {
+      box-shadow: none;
+      margin: 0;
+      height: 296mm;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+    .ph { color: transparent !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
 </head>
 <body>
+<div class="app">
 
-    <!-- Control Panel -->
-    <div class="form-container">
-        <h2>Cover Page Information</h2>
-        
-        <div class="form-group">
-            <label>Course Code:</label>
-            <input type="text" id="input-course-code" placeholder="e.g. CSE-1151" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>Course Title:</label>
-            <input type="text" id="input-course-title" placeholder="e.g. Discrete Mathematics" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>Assignment / Topic:</label>
-            <input type="text" id="input-assignment" placeholder="e.g. Assignment-01: Graph & Tree" oninput="updatePreview()">
-        </div>
+  <!-- ============ LEFT: FORM PANEL ============ -->
+  <aside class="panel">
+    <h1>Cover Page Generator</h1>
+    <p class="sub">Fill in the details. The A4 preview updates as you type.</p>
 
-        <hr style="margin: 15px 0; border:0; border-top:1px solid #ddd;">
-        <h3 style="font-size: 15px; margin-bottom: 10px; color:#444;">Submitted By (Your Info)</h3>
+    <fieldset>
+      <legend>Course Information</legend>
+      <div class="field"><label for="courseCode">Course Code</label>
+        <input id="courseCode" data-target="p_courseCode" placeholder="e.g. CSE-1101" autocomplete="off"></div>
+      <div class="field"><label for="courseTitle">Course Title</label>
+        <input id="courseTitle" data-target="p_courseTitle" placeholder="e.g. Discrete Mathematics" autocomplete="off"></div>
+      <div class="field"><label for="topic">Assignment / Topic</label>
+        <input id="topic" data-target="p_topic" placeholder="e.g. Assignment-01: Graph Theory" autocomplete="off"></div>
+    </fieldset>
 
-        <div class="form-group">
-            <label>Name:</label>
-            <input type="text" id="input-my-name" placeholder="Your Name Here" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>ID:</label>
-            <input type="text" id="input-my-id" placeholder="Your ID Here" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>Section:</label>
-            <input type="text" id="input-my-section" placeholder="Section Here" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>Batch:</label>
-            <input type="text" id="input-my-batch" placeholder="Batch Here" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>Department:</label>
-            <input type="text" id="input-my-dept" placeholder="CSE" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>Session:</label>
-            <input type="text" id="input-my-session" placeholder="e.g. Fall 2026" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>E-mail:</label>
-            <input type="text" id="input-my-email" placeholder="Your Email Here" oninput="updatePreview()">
-        </div>
+    <fieldset>
+      <legend>Submitted By (Student)</legend>
+      <div class="field"><label for="sName">Name</label>
+        <input id="sName" data-target="p_sName" placeholder="Your Name Here" autocomplete="off"></div>
+      <div class="field"><label for="sId">ID</label>
+        <input id="sId" data-target="p_sId" placeholder="Your ID Here" autocomplete="off"></div>
+      <div class="field"><label for="sSection">Section</label>
+        <input id="sSection" data-target="p_sSection" placeholder="e.g. A" autocomplete="off"></div>
+      <div class="field"><label for="sBatch">Batch</label>
+        <input id="sBatch" data-target="p_sBatch" placeholder="e.g. 69" autocomplete="off"></div>
+      <div class="field"><label for="sDept">Department</label>
+        <input id="sDept" data-target="p_sDept" placeholder="e.g. CSE" autocomplete="off"></div>
+      <div class="field"><label for="sSession">Session</label>
+        <input id="sSession" data-target="p_sSession" placeholder="e.g. Summer 2026" autocomplete="off"></div>
+      <div class="field"><label for="sEmail">E-mail</label>
+        <input id="sEmail" type="email" data-target="p_sEmail" placeholder="yourname@gmail.com" autocomplete="off"></div>
+    </fieldset>
 
-        <hr style="margin: 15px 0; border:0; border-top:1px solid #ddd;">
-        <h3 style="font-size: 15px; margin-bottom: 10px; color:#444;">Submitted To (Teacher Info)</h3>
+    <fieldset>
+      <legend>Submitted To (Teacher)</legend>
+      <div class="field"><label for="tName">Name</label>
+        <input id="tName" data-target="p_tName" placeholder="Teacher's Name Here" autocomplete="off"></div>
+      <div class="field"><label for="tDesig">Designation</label>
+        <input id="tDesig" data-target="p_tDesig" placeholder="e.g. Assistant Professor" autocomplete="off"></div>
+      <div class="field"><label for="tUni">University / Office</label>
+        <input id="tUni" data-target="p_tUni" placeholder="e.g. Leading University, Sylhet" autocomplete="off"></div>
+      <div class="field"><label for="tEmail">E-mail</label>
+        <input id="tEmail" type="email" data-target="p_tEmail" placeholder="teacher@example.com" autocomplete="off"></div>
+    </fieldset>
 
-        <div class="form-group">
-            <label>Teacher Name:</label>
-            <input type="text" id="input-teacher-name" placeholder="Teacher Name Here" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>Designation:</label>
-            <input type="text" id="input-teacher-desig" placeholder="e.g. Lecturer" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>University / Office:</label>
-            <input type="text" id="input-teacher-uni" placeholder="Leading University, Sylhet" oninput="updatePreview()">
-        </div>
-        <div class="form-group">
-            <label>Teacher E-mail:</label>
-            <input type="text" id="input-teacher-email" placeholder="Teacher Email Here" oninput="updatePreview()">
-        </div>
+    <fieldset>
+      <legend>Submission</legend>
+      <div class="field"><label for="date">Submission Date</label>
+        <input id="date" data-target="p_date" placeholder="e.g. 20/11/2026" autocomplete="off"></div>
+    </fieldset>
 
-        <div class="form-group">
-            <label>Submission Date:</label>
-            <input type="text" id="input-date" placeholder="DD/MM/YYYY" oninput="updatePreview()">
-        </div>
-
-        <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+    <div class="btn-row">
+      <button class="btn btn-print" type="button" id="printBtn">Print / Save as PDF</button>
+      <button class="btn btn-clear" type="button" id="clearBtn">Clear</button>
     </div>
+  </aside>
 
-    <!-- Cover Page Preview -->
-    <div class="cover-page">
-        <div class="header-section">
-            <div class="logo-area">
-                <!-- Ekhane apnar logo.png ba link thakbe -->
-                <img src="./LU_L.png" alt="Leading University Logo">
-            </div>
-            <div class="university-name">LEADING UNIVERSITY</div>
-            <div class="dept-title">Department</div>
-            <div class="dept-name">Computer Science & Engineering</div>
-            
-            <div class="course-info" id="preview-course-code">Course Code: </div>
-            <div class="course-info" id="preview-course-title">Course Title: </div>
-            <div class="course-info" id="preview-assignment"></div>
+  <!-- ============ RIGHT: A4 PREVIEW ============ -->
+  <main class="preview-area" id="previewArea">
+    <div class="scale-box" id="scaleBox">
+      <section class="page" id="page">
+
+        <div class="header">
+          <img src="LU_L.png" alt="Leading University Logo" onerror="this.style.display='none'">
+          <h2 class="uni">Leading University</h2>
+          <p class="dept-label">Department</p>
+          <p class="dept-name">Computer Science &amp; Engineering</p>
         </div>
 
-        <table class="info-table">
+        <div class="course">
+          <div>Course Code: <span id="p_courseCode"></span></div>
+          <div>Course Title: <span id="p_courseTitle"></span></div>
+          <div><span id="p_topic"></span></div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="split">
+            <colgroup><col><col></colgroup>
             <thead>
-                <tr>
-                    <th style="width: 50%;">Submitted By</th>
-                    <th style="width: 50%;">Submitted To</th>
-                </tr>
+              <tr><th>Submitted By</th><th>Submitted To</th></tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <strong>Name:</strong> <span id="prev-my-name"></span><br>
-                        <strong>ID:</strong> <span id="prev-my-id"></span><br>
-                        <strong>Section:</strong> <span id="prev-my-section"></span><br>
-                        <strong>Batch:</strong> <span id="prev-my-batch"></span><br>
-                        <strong>Department:</strong> <span id="prev-my-dept"></span><br>
-                        <strong>Session:</strong> <span id="prev-my-session"></span><br>
-                        <strong>E-mail:</strong> <span id="prev-my-email"></span>
-                    </td>
-                    <td>
-                        <strong>Name:</strong> <span id="prev-teacher-name"></span><br>
-                        <strong>Designation:</strong> <span id="prev-teacher-desig"></span><br>
-                        <span id="prev-teacher-uni"></span><br>
-                        <strong>E-mail:</strong><br><span id="prev-teacher-email"></span>
-                    </td>
-                </tr>
+              <tr>
+                <td class="stu">
+                  <div class="info"><span class="lbl">Name</span><span class="col">:</span><span class="val" id="p_sName"></span></div>
+                  <div class="info"><span class="lbl">ID</span><span class="col">:</span><span class="val" id="p_sId"></span></div>
+                  <div class="info"><span class="lbl">Section</span><span class="col">:</span><span class="val" id="p_sSection"></span></div>
+                  <div class="info"><span class="lbl">Batch</span><span class="col">:</span><span class="val" id="p_sBatch"></span></div>
+                  <div class="info"><span class="lbl">Department</span><span class="col">:</span><span class="val" id="p_sDept"></span></div>
+                  <div class="info"><span class="lbl">Session</span><span class="col">:</span><span class="val" id="p_sSession"></span></div>
+                  <div class="info"><span class="lbl">E-mail</span><span class="col">:</span><span class="val small" id="p_sEmail"></span></div>
+                </td>
+                <td class="tea">
+                  <div class="info"><span class="lbl">Name</span><span class="col">:</span><span class="val" id="p_tName"></span></div>
+                  <div class="info"><span class="lbl">Designation</span><span class="col">:</span><span class="val" id="p_tDesig"></span></div>
+                  <div class="info"><span class="lbl">University</span><span class="col">:</span><span class="val" id="p_tUni"></span></div>
+                  <div class="info"><span class="lbl">E-mail</span><span class="col">:</span><span class="val small" id="p_tEmail"></span></div>
+                </td>
+              </tr>
             </tbody>
-        </table>
-
-        <div class="footer-date">
-            Submission Date: <span id="prev-date"></span>
+          </table>
         </div>
+
+        <div class="footer">Submission Date: <span id="p_date"></span></div>
+
+      </section>
     </div>
+  </main>
+</div>
 
-    <script>
-        function updatePreview() {
-            let cCode = document.getElementById('input-course-code').value;
-            document.getElementById('preview-course-code').innerText = cCode ? "Course Code: " + cCode : "";
+<script>
+(function () {
+  var inputs = document.querySelectorAll('input[data-target]');
 
-            let cTitle = document.getElementById('input-course-title').value;
-            document.getElementById('preview-course-title').innerText = cTitle ? "Course Title: " + cTitle : "";
+  // Show typed text in the preview. If empty, show the placeholder (faded).
+  function sync(input) {
+    var target = document.getElementById(input.getAttribute('data-target'));
+    var value = input.value.trim();
+    if (value) {
+      target.textContent = value;
+      target.classList.remove('ph');
+    } else {
+      target.textContent = input.placeholder;
+      target.classList.add('ph');
+    }
+  }
 
-            document.getElementById('preview-assignment').innerText = document.getElementById('input-assignment').value;
+  inputs.forEach(function (input) {
+    sync(input);
+    input.addEventListener('input', function () { sync(input); });
+  });
 
-            document.getElementById('prev-my-name').innerText = document.getElementById('input-my-name').value;
-            document.getElementById('prev-my-id').innerText = document.getElementById('input-my-id').value;
-            document.getElementById('prev-my-section').innerText = document.getElementById('input-my-section').value;
-            document.getElementById('prev-my-batch').innerText = document.getElementById('input-my-batch').value;
-            document.getElementById('prev-my-dept').innerText = document.getElementById('input-my-dept').value;
-            document.getElementById('prev-my-session').innerText = document.getElementById('input-my-session').value;
-            document.getElementById('prev-my-email').innerText = document.getElementById('input-my-email').value;
+  document.getElementById('printBtn').addEventListener('click', function () {
+    window.print();
+  });
 
-            document.getElementById('prev-teacher-name').innerText = document.getElementById('input-teacher-name').value;
-            document.getElementById('prev-teacher-desig').innerText = document.getElementById('input-teacher-desig').value;
-            document.getElementById('prev-teacher-uni').innerText = document.getElementById('input-teacher-uni').value;
-            document.getElementById('prev-teacher-email').innerText = document.getElementById('input-teacher-email').value;
+  document.getElementById('clearBtn').addEventListener('click', function () {
+    inputs.forEach(function (input) { input.value = ''; sync(input); });
+  });
 
-            document.getElementById('prev-date').innerText = document.getElementById('input-date').value;
-        }
-    </script>
+  // ---------- Fit + CENTER the A4 preview ----------
+  var area = document.getElementById('previewArea');
+  var box = document.getElementById('scaleBox');
+  var page = document.getElementById('page');
+
+  function fitPreview() {
+    box.style.transform = 'none';
+    box.style.marginLeft = '0px';
+    area.style.height = 'auto';
+
+    var pageW = page.offsetWidth;
+    var pageH = page.offsetHeight;
+    var availW = area.clientWidth;
+    var scale = Math.min(1, availW / pageW);
+
+    var left = Math.max(0, (availW - pageW * scale) / 2);
+    box.style.marginLeft = left + 'px';
+
+    if (scale < 1) {
+      box.style.transform = 'scale(' + scale + ')';
+    }
+    area.style.height = (pageH * scale) + 'px';
+  }
+
+  window.addEventListener('resize', fitPreview);
+  window.addEventListener('load', fitPreview);
+  if (window.ResizeObserver) {
+    new ResizeObserver(fitPreview).observe(area);
+  }
+
+  window.addEventListener('beforeprint', function () {
+    box.style.transform = 'none';
+    box.style.marginLeft = '0px';
+    area.style.height = '297mm';
+  });
+  window.addEventListener('afterprint', fitPreview);
+
+  fitPreview();
+})();
+</script>
 </body>
 </html>
