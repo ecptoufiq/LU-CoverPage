@@ -96,7 +96,7 @@
     padding: 9mm 11mm 12mm;
     background: #fff;
     color: #000;
-    font-family: "Times New Roman", Times, serif;
+    font-family: "Times New Roman", "Liberation Serif", Tinos, Times, "Noto Serif", serif;
     border: 1px solid #000;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
     display: flex;
@@ -143,7 +143,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;   /* blank space above and below the box */
+    justify-content: center;
     padding: 6mm 2mm 0;
     min-height: 0;
   }
@@ -172,22 +172,21 @@
     padding: 4mm 3mm;
     font-size: 13pt;
   }
-  /* label column width per side (so all colons line up) */
-  td.stu { --lw: 24mm; }
-  td.tea { --lw: 27mm; }
 
-  /* Each line:  Label | : | Value
-     Long value wraps inside its own column (never under the label). */
-  .info {
+  /* One grid per cell, 3 columns: [label] [:] [value].
+     The label column automatically fits the longest label (on any font),
+     so label and colon can never overlap, and all colons line up. */
+  .grid {
     display: grid;
-    grid-template-columns: var(--lw) 2.5mm minmax(0, 1fr);
-    column-gap: 1mm;
+    grid-template-columns: max-content max-content minmax(0, 1fr);
+    column-gap: 1.5mm;
+    row-gap: 2.5mm;
     align-items: start;
-    margin-bottom: 2.5mm;
     line-height: 1.25;
   }
+  .info { display: contents; }
   .info .lbl { font-weight: 700; white-space: nowrap; }
-  .info .col { font-weight: 700; text-align: center; }
+  .info .col { font-weight: 700; white-space: nowrap; }
   .info .val {
     min-width: 0;
     font-weight: 400;
@@ -334,20 +333,24 @@
             </thead>
             <tbody>
               <tr>
-                <td class="stu">
-                  <div class="info"><span class="lbl">Name</span><span class="col">:</span><span class="val" id="p_sName"></span></div>
-                  <div class="info"><span class="lbl">ID</span><span class="col">:</span><span class="val" id="p_sId"></span></div>
-                  <div class="info"><span class="lbl">Section</span><span class="col">:</span><span class="val" id="p_sSection"></span></div>
-                  <div class="info"><span class="lbl">Batch</span><span class="col">:</span><span class="val" id="p_sBatch"></span></div>
-                  <div class="info"><span class="lbl">Department</span><span class="col">:</span><span class="val" id="p_sDept"></span></div>
-                  <div class="info"><span class="lbl">Session</span><span class="col">:</span><span class="val" id="p_sSession"></span></div>
-                  <div class="info"><span class="lbl">E-mail</span><span class="col">:</span><span class="val small" id="p_sEmail"></span></div>
+                <td>
+                  <div class="grid">
+                    <div class="info"><span class="lbl">Name</span><span class="col">:</span><span class="val" id="p_sName"></span></div>
+                    <div class="info"><span class="lbl">ID</span><span class="col">:</span><span class="val" id="p_sId"></span></div>
+                    <div class="info"><span class="lbl">Section</span><span class="col">:</span><span class="val" id="p_sSection"></span></div>
+                    <div class="info"><span class="lbl">Batch</span><span class="col">:</span><span class="val" id="p_sBatch"></span></div>
+                    <div class="info"><span class="lbl">Department</span><span class="col">:</span><span class="val" id="p_sDept"></span></div>
+                    <div class="info"><span class="lbl">Session</span><span class="col">:</span><span class="val" id="p_sSession"></span></div>
+                    <div class="info"><span class="lbl">E-mail</span><span class="col">:</span><span class="val small" id="p_sEmail"></span></div>
+                  </div>
                 </td>
-                <td class="tea">
-                  <div class="info"><span class="lbl">Name</span><span class="col">:</span><span class="val" id="p_tName"></span></div>
-                  <div class="info"><span class="lbl">Designation</span><span class="col">:</span><span class="val" id="p_tDesig"></span></div>
-                  <div class="info"><span class="lbl">University</span><span class="col">:</span><span class="val" id="p_tUni"></span></div>
-                  <div class="info"><span class="lbl">E-mail</span><span class="col">:</span><span class="val small" id="p_tEmail"></span></div>
+                <td>
+                  <div class="grid">
+                    <div class="info"><span class="lbl">Name</span><span class="col">:</span><span class="val" id="p_tName"></span></div>
+                    <div class="info"><span class="lbl">Designation</span><span class="col">:</span><span class="val" id="p_tDesig"></span></div>
+                    <div class="info"><span class="lbl">University</span><span class="col">:</span><span class="val" id="p_tUni"></span></div>
+                    <div class="info"><span class="lbl">E-mail</span><span class="col">:</span><span class="val small" id="p_tEmail"></span></div>
+                  </div>
                 </td>
               </tr>
             </tbody>
